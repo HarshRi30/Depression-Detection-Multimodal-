@@ -437,7 +437,30 @@ def main():
     plt.ylim(0.45, 0.85)
     plt.grid(axis='y', alpha=0.3)
     plt.tight_layout()
-    plt.savefig(os.path.join(RESULTS_DIR, 'modality_importance.png'), dpi=150)
+    plt.savefig(os.path.join(RESULTS_DIR, 'modality_weights.png'), dpi=150)
+    plt.close()
+
+    # Accuracy Matrix (Heatmap)
+    df_metrics = pd.DataFrame(final_metrics)
+    plt.figure(figsize=(10, 6))
+    sns.heatmap(df_metrics.set_index('Model')[['AUC', 'Accuracy', 'F1', 'Precision', 'Recall']], 
+                annot=True, cmap='Blues', fmt='.3f', annot_kws={"size": 14})
+    plt.title('Performance Matrix by Modality', fontsize=16, fontweight='bold')
+    plt.ylabel('')
+    plt.tight_layout()
+    plt.savefig(os.path.join(RESULTS_DIR, 'accuracy_matrix.png'), dpi=150)
+    plt.close()
+
+    # Performance Metrics Bar Chart
+    plt.figure(figsize=(10, 6))
+    df_melted = df_metrics.melt(id_vars='Model', value_vars=['Accuracy', 'F1', 'AUC'], 
+                        var_name='Metric', value_name='Score')
+    sns.barplot(data=df_melted, x='Model', y='Score', hue='Metric', palette='viridis')
+    plt.title('Key Performance Metrics Comparison', fontsize=16, fontweight='bold')
+    plt.ylim(0, 1.0)
+    plt.legend(loc='lower right', fontsize=12)
+    plt.tight_layout()
+    plt.savefig(os.path.join(RESULTS_DIR, 'performance_metrics_barchart.png'), dpi=150)
     plt.close()
 
     # ── 5. SAVE PRODUCTION MODELS ────────────────────────────────────
